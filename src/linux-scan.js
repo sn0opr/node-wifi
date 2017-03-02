@@ -71,7 +71,6 @@ function scanWifi(config) {
 						mac = true;
 						break;
 					case 'ACTIVE':
-						console.log(network, scanResults[i])
 						network.active = scanResults[i][1] == "yes" ? true : false;
 						active = true;
 						break;
