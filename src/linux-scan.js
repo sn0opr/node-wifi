@@ -31,6 +31,7 @@ function scanWifi(config) {
     	    var signal = false;
     	    var sec = false;
     	    var mac = false;
+    	    var active = false;
 
     	    // scanResults = scanResults.toString('utf8').split(' ').join('').split('\n');
             scanResults = scanResults.toString('utf8').replace(/\:[ ]*/g, ':').split('\n');
@@ -43,36 +44,42 @@ function scanWifi(config) {
         		    scanResults[i][1] = scanResults[i][1].split("'").join("");
         		}
         		switch(scanResults[i][0]) {
-        		case 'SSID':
-        		    network.ssid = scanResults[i][1];
-        		    ssid = true;
-        		    break;
-        		case 'FREQ':
-        		    network.frequency = parseInt(scanResults[i][1]);
-        		    freq = true;
-        		    break;
-        		case 'SIGNAL':
-        		    network.signal_level = networkUtils.dBFromQuality(
-        			scanResults[i][1]);
-        		    signal = true;
-        		    break;
-        		case 'SECURITY':
-        		    network.security = scanResults[i][1];
-        		    sec = true;
-        		    break;
-        		case 'BSSID':
-        		    var macAdress = '';
-        		    for (var j = 1; j < 6; j++) {
-        			macAdress = macAdress + scanResults[i][j] + ':';
-        		    }
-        		    macAdress = macAdress + scanResults[i][6];
-        		    network.mac = macAdress;
-        		    mac = true;
-        		    break;
+					case 'SSID':
+						network.ssid = scanResults[i][1];
+						ssid = true;
+						break;
+					case 'FREQ':
+						network.frequency = parseInt(scanResults[i][1]);
+						freq = true;
+						break;
+					case 'SIGNAL':
+						network.signal_level = networkUtils.dBFromQuality(
+						scanResults[i][1]);
+						signal = true;
+						break;
+					case 'SECURITY':
+						network.security = scanResults[i][1];
+						sec = true;
+						break;
+					case 'BSSID':
+						var macAdress = '';
+						for (var j = 1; j < 6; j++) {
+						macAdress = macAdress + scanResults[i][j] + ':';
+						}
+						macAdress = macAdress + scanResults[i][6];
+						network.mac = macAdress;
+						mac = true;
+						break;
+					case 'ACTIVE':
+						console.log(network, scanResults[i])
+						network.active = scanResults[i][1] == "yes" ? true : false;
+						active = true;
+						break;
+
         		default:
         		    break;
         		}
-        		if ((ssid) && (freq) && (signal) && (sec) && (mac)) {
+        		if ((ssid) && (freq) && (signal) && (sec) && (mac) && (active)) {
         		    networks.push(network);
         		    network = {};
         		    ssid = false;
@@ -80,6 +87,7 @@ function scanWifi(config) {
         		    signal = false;
         		    sec = false;
         		    mac = false;
+                    active = false;
         		}
     	    }
     	    var resp = networks;
